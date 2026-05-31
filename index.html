@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trendifii Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="./script.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+        .sidebar-item:hover { background: rgba(99,102,241,0.1); border-right: 3px solid #6366f1; }
+        .sidebar-item.active { background: rgba(99,102,241,0.15); border-right: 3px solid #6366f1; color: #6366f1; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Login Screen -->
+<div id="loginScreen" class="fixed inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center z-50 px-4">
+    <div class="bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/20">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-chart-line text-3xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white">Trendifii Admin</h1>
+            <p class="text-white/70 mt-2">Influencer Marketing Platform</p>
+        </div>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-white/80 text-sm mb-1">Email</label>
+                <input type="email" id="loginEmail" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50" placeholder="admin@trendifii.com" required>
+            </div>
+            <div>
+                <label class="block text-white/80 text-sm mb-1">Password</label>
+                <input type="password" id="loginPassword" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="w-full py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-white/90 transition">
+                <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+            </button>
+        </form>
+        <div class="mt-6 text-center">
+            <button onclick="showRegister()" class="text-white/70 hover:text-white text-sm">Create admin account</button>
+        </div>
+    </div>
+</div>
+
+<!-- Register Screen -->
+<div id="registerScreen" class="fixed inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center z-50 hidden px-4">
+    <div class="bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/20">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white">Admin Registration</h1>
+            <p class="text-white/70 mt-2">Create your admin account</p>
+        </div>
+        <form id="registerForm" class="space-y-4">
+            <div>
+                <label class="block text-white/80 text-sm mb-1">Full Name</label>
+                <input type="text" id="regName" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50" placeholder="John Doe" required>
+            </div>
+            <div>
+                <label class="block text-white/80 text-sm mb-1">Email</label>
+                <input type="email" id="regEmail" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50" placeholder="admin@trendifii.com" required>
+            </div>
+            <div>
+                <label class="block text-white/80 text-sm mb-1">Password</label>
+                <input type="password" id="regPassword" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="w-full py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-white/90 transition">
+                <i class="fas fa-user-plus mr-2"></i>Register
+            </button>
+        </form>
+        <div class="mt-4 text-center">
+            <button onclick="showLogin()" class="text-white/70 hover:text-white text-sm">Already have an account? Sign in</button>
+        </div>
+    </div>
+</div>
+
+<!-- OTP Verification Screen -->
+<div id="otpScreen" class="fixed inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center z-50 hidden px-4">
+    <div class="bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/20">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-shield-alt text-3xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white">Verify OTP</h1>
+            <p class="text-white/70 mt-2">Enter the code sent to your email</p>
+        </div>
+        <form id="otpForm" class="space-y-4">
+            <input type="hidden" id="otpEmail">
+            <div>
+                <label class="block text-white/80 text-sm mb-1">OTP Code</label>
+                <input type="text" id="otpCode" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50 text-center text-2xl tracking-widest" placeholder="000000" maxlength="6" required>
+            </div>
+            <button type="submit" class="w-full py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-white/90 transition">
+                <i class="fas fa-check mr-2"></i>Verify
+            </button>
+        </form>
+        <div class="mt-4 text-center">
+            <button onclick="resendOTP()" class="text-white/70 hover:text-white text-sm">Resend OTP</button>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar overlay (mobile only) -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden" onclick="closeSidebar()"></div>
+
+<!-- Main Dashboard -->
+<div id="dashboard" class="hidden flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed md:relative inset-y-0 left-0 z-40 w-64 h-screen shrink-0 bg-white border-r border-gray-200 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-300">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-chart-line text-white"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-gray-800">Trendifii</h2>
+                    <p class="text-xs text-gray-500">Admin Panel</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="flex-1 py-4">
+            <a href="#" onclick="showSection('overview')" id="nav-overview" class="sidebar-item active flex items-center gap-3 px-6 py-3 text-gray-600 hover:text-indigo-600 transition">
+                <i class="fas fa-home w-5"></i>
+                <span>Overview</span>
+            </a>
+            <a href="#" onclick="showSection('campaigns')" id="nav-campaigns" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-600 hover:text-indigo-600 transition">
+                <i class="fas fa-bullhorn w-5"></i>
+                <span>Campaigns</span>
+            </a>
+            <a href="#" onclick="showSection('posts')" id="nav-posts" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-600 hover:text-indigo-600 transition">
+                <i class="fas fa-photo-video w-5"></i>
+                <span>Posts & Scoring</span>
+            </a>
+            <a href="#" onclick="showSection('analytics')" id="nav-analytics" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-600 hover:text-indigo-600 transition">
+                <i class="fas fa-chart-bar w-5"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="#" onclick="showSection('settings')" id="nav-settings" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-600 hover:text-indigo-600 transition">
+                <i class="fas fa-cog w-5"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+        
+        <div class="p-4 border-t border-gray-200">
+            <button onclick="logout()" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg w-full transition">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-auto bg-gray-50">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-4 md:px-8 py-4 flex justify-between items-center sticky top-0 z-10">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+                <div>
+                    <h1 id="pageTitle" class="text-xl md:text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+                    <p class="text-sm text-gray-500 hidden sm:block" id="currentDate"></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-semibold" id="adminAvatar">
+                        A
+                    </div>
+                    <div class="hidden md:block">
+                        <p class="text-sm font-semibold text-gray-800" id="adminName">Admin</p>
+                        <p class="text-xs text-gray-500">Super Admin</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-4 md:p-8">
+            <!-- Overview Section -->
+            <div id="section-overview" class="fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Total Campaigns</p>
+                                <h3 class="text-3xl font-bold text-gray-800" id="totalCampaigns">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                                <i class="fas fa-bullhorn text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-500 font-medium"><i class="fas fa-arrow-up mr-1"></i>Active</span>
+                            <span class="text-gray-400 ml-2">this month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Total Posts</p>
+                                <h3 class="text-3xl font-bold text-gray-800" id="totalPosts">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600">
+                                <i class="fas fa-photo-video text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-500 font-medium"><i class="fas fa-arrow-up mr-1"></i>Scored</span>
+                            <span class="text-gray-400 ml-2">awaiting review</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Budget Allocated</p>
+                                <h3 class="text-3xl font-bold text-gray-800" id="totalBudget">$0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-green-600">
+                                <i class="fas fa-dollar-sign text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-gray-500">Across all campaigns</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Avg Post Score</p>
+                                <h3 class="text-3xl font-bold text-gray-800" id="avgScore">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center text-orange-600">
+                                <i class="fas fa-star text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-gray-500">Based on engagement</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Campaign Status Distribution</h3>
+                        <div style="position: relative; height: 250px;">
+                            <canvas id="campaignChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
+                        <div id="recentActivity" class="space-y-4">
+                            <div class="text-gray-400 text-center py-8">Loading activity...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campaigns Section -->
+            <div id="section-campaigns" class="hidden fade-in">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="filterCampaigns('all')" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium transition filter-btn active" data-filter="all">All</button>
+                        <button onclick="filterCampaigns('active')" class="px-4 py-2 bg-white text-gray-600 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition filter-btn" data-filter="active">Active</button>
+                        <button onclick="filterCampaigns('draft')" class="px-4 py-2 bg-white text-gray-600 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition filter-btn" data-filter="draft">Draft</button>
+                        <button onclick="filterCampaigns('completed')" class="px-4 py-2 bg-white text-gray-600 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition filter-btn" data-filter="completed">Completed</button>
+                    </div>
+                    <button onclick="openCampaignModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition flex items-center gap-2">
+                        <i class="fas fa-plus"></i> New Campaign
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                    <table class="w-full min-w-[640px]">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Campaign</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Category</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Budget</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Duration</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="campaignsTable" class="divide-y divide-gray-100">
+                            <tr><td colspan="6" class="px-6 py-8 text-center text-gray-400">Loading campaigns...</td></tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posts Section -->
+            <div id="section-posts" class="hidden fade-in">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+                    <div class="flex flex-wrap gap-1 bg-white p-1 rounded-lg border border-gray-200">
+                        <button onclick="filterPosts('all')" class="px-3 py-2 rounded-md text-sm font-medium bg-indigo-50 text-indigo-600 post-filter active" data-filter="all">All Posts</button>
+                        <button onclick="filterPosts('pending')" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 post-filter" data-filter="pending">Pending Score</button>
+                        <button onclick="filterPosts('scored')" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 post-filter" data-filter="scored">Scored</button>
+                    </div>
+                    <button onclick="refreshPosts()" class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+
+                <div id="postsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="col-span-full text-center py-12 text-gray-400">Loading posts...</div>
+                </div>
+                
+                <div id="pagination" class="mt-6 flex justify-center gap-2">
+                    <button onclick="changePage(-1)" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50" id="prevPage">Previous</button>
+                    <span class="px-4 py-2 text-sm text-gray-600" id="pageInfo">Page 1</span>
+                    <button onclick="changePage(1)" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50" id="nextPage">Next</button>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="section-analytics" class="hidden fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Engagement Overview</h3>
+                        <div style="position: relative; height: 280px;">
+                            <canvas id="engagementChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Platform Distribution</h3>
+                        <div style="position: relative; height: 280px;">
+                            <canvas id="platformChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Performance Metrics</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Metric</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Value</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100" id="metricsTable">
+                                <tr><td colspan="3" class="px-6 py-8 text-center text-gray-400">Loading metrics...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="section-settings" class="hidden fade-in">
+                <div class="max-w-2xl">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Account Settings</h3>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-800">Delete Account</p>
+                                    <p class="text-sm text-gray-500">Permanently remove your admin account</p>
+                                </div>
+                                <button onclick="deleteAccount()" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Create Campaign Modal -->
+<div id="campaignModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-800">Create New Campaign</h3>
+            <button onclick="closeCampaignModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <form id="campaignForm" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name *</label>
+                <input type="text" name="name" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                <textarea name="description" required rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500"></textarea>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+                    <input type="datetime-local" name="start_date" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date *</label>
+                    <input type="datetime-local" name="end_date" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                <input type="text" name="category" required placeholder="e.g., Fashion, Tech, Food" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Amount Allocated ($)</label>
+                    <input type="number" name="amount_allocated" step="0.01" value="0" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Brand Cap ($)</label>
+                    <input type="number" name="brand_cap" step="0.01" value="0" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select name="campaign_status" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
+                    <option value="draft">Draft</option>
+                    <option value="active">Active</option>
+                    <option value="paused">Paused</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Brand Image</label>
+                <input type="file" name="brand_image" accept="image/*" class="w-full px-4 py-2 border border-gray-200 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-600">
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" onclick="closeCampaignModal()" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Create Campaign</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Score Post Modal -->
+<div id="scoreModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-800">Score Post</h3>
+            <button onclick="closeScoreModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <p class="text-gray-600 mb-4">Trigger automated scoring for this post based on engagement metrics.</p>
+            <div id="scorePostDetails" class="bg-gray-50 p-4 rounded-lg mb-4">
+                <p class="text-sm text-gray-500">Post ID: <span id="scorePostId" class="font-mono text-gray-800"></span></p>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeScoreModal()" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50">Cancel</button>
+                <button onclick="confirmScore()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2">
+                    <i class="fas fa-magic"></i> Run Scoring
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast opacity-0 pointer-events-none translate-y-2 transition-all duration-300 fixed top-4 right-4 z-50 bg-white border border-gray-200 shadow-lg rounded-lg p-4 flex items-center gap-3 w-72 sm:w-80">
+    <div id="toastIcon" class="w-8 h-8 rounded-full flex items-center justify-center"></div>
+    <div>
+        <p id="toastTitle" class="font-semibold text-sm"></p>
+        <p id="toastMessage" class="text-xs text-gray-500"></p>
+    </div>
+</div>
+
+</body>
+</html>

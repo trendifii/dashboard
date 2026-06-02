@@ -267,12 +267,14 @@ function renderCampaigns(filter = 'all') {
         <tr class="hover:bg-gray-50 transition">
             <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
-                        <i class="fas fa-bullhorn"></i>
+                    <div class="w-10 h-10 rounded-lg overflow-hidden bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+                        ${c.brand_image_url
+                            ? `<img src="${c.brand_image_url}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-bullhorn\\'></i>'">`
+                            : `<i class="fas fa-bullhorn"></i>`}
                     </div>
                     <div>
                         <p class="font-medium text-gray-800">${c.name}</p>
-                        <p class="text-xs text-gray-500">${c.owner_email}</p>
+                        <p class="text-xs text-gray-500">${(c.owner_email || '').split('@')[0]}</p>
                     </div>
                 </div>
             </td>
@@ -559,6 +561,9 @@ function refreshPosts() {
 }
 
 function openCampaignModal() {
+    const todayLocal = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    document.querySelector('[name="start_date"]').min = todayLocal;
+    document.querySelector('[name="end_date"]').min = todayLocal;
     document.getElementById('campaignModal').classList.add('active');
 }
 

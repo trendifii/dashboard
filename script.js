@@ -242,7 +242,7 @@ function updateOverview() {
     document.getElementById('totalPosts').textContent = posts.length;
     
     const totalBudget = campaigns.reduce((sum, c) => sum + (c.amount_allocated || 0), 0);
-    document.getElementById('totalBudget').textContent = `$${totalBudget.toLocaleString()}`;
+    document.getElementById('totalBudget').textContent = `€${totalBudget.toLocaleString()}`;
     
     const scoredPosts = posts.filter(p => p.score !== null);
     const avgScore = scoredPosts.length ? (scoredPosts.reduce((sum, p) => sum + (p.score || 0), 0) / scoredPosts.length).toFixed(1) : 0;
@@ -282,7 +282,7 @@ function renderCampaigns(filter = 'all') {
                     ${c.campaign_status}
                 </span>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-600">$${(c.amount_allocated || 0).toLocaleString()}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">€${(c.amount_allocated || 0).toLocaleString()}</td>
             <td class="px-6 py-4 text-sm text-gray-600">
                 <div>${new Date(c.start_date).toLocaleDateString()}</div>
                 <div class="text-xs text-gray-400">to ${new Date(c.end_date).toLocaleDateString()}</div>
@@ -357,7 +357,7 @@ function renderPosts(filter = 'all') {
                 <div class="flex items-center justify-between pt-3 border-t border-gray-100">
                     <span class="text-xs text-gray-500">Final Price</span>
                     <span class="text-sm font-semibold ${p.final_price != null ? 'text-indigo-600' : 'text-gray-400'}">
-                        ${p.final_price != null ? `$${Number(p.final_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—'}
+                        ${p.final_price != null ? `€${Number(p.final_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—'}
                     </span>
                 </div>
             </div>

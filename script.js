@@ -343,16 +343,22 @@ function renderPosts(filter = 'all') {
                     <span><i class="fas fa-heart mr-1"></i>${p.like_count || 0}</span>
                     <span><i class="fas fa-comment mr-1"></i>${p.comment_count || 0}</span>
                 </div>
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between mb-3">
                     <div class="text-sm">
-                        ${p.score !== null ? 
-                            `<span class="text-green-600 font-semibold"><i class="fas fa-star mr-1"></i>${p.score}</span>` : 
+                        ${p.score !== null ?
+                            `<span class="text-green-600 font-semibold"><i class="fas fa-star mr-1"></i>${p.score}</span>` :
                             `<span class="text-gray-400">Not scored</span>`
                         }
                     </div>
                     <button onclick="openScoreModal('${p.id}')" class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-medium hover:bg-indigo-100 transition">
                         ${p.score !== null ? 'Re-score' : 'Score'}
                     </button>
+                </div>
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <span class="text-xs text-gray-500">Final Price</span>
+                    <span class="text-sm font-semibold ${p.final_price != null ? 'text-indigo-600' : 'text-gray-400'}">
+                        ${p.final_price != null ? `$${Number(p.final_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—'}
+                    </span>
                 </div>
             </div>
         </div>

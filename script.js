@@ -337,7 +337,7 @@ function renderPosts(filter = 'all') {
                     <div class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-xs text-indigo-600 font-bold">
                         ${(p.user_email || '?').charAt(0).toUpperCase()}
                     </div>
-                    <span class="text-sm text-gray-600 truncate">${p.user_email || 'Unknown'}</span>
+                    <span class="text-sm text-gray-600 truncate">${(p.user_email || 'Unknown').split('@')[0]}</span>
                 </div>
                 <p class="text-sm text-gray-800 line-clamp-2 mb-3">${p.caption || ''}</p>
                 <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
